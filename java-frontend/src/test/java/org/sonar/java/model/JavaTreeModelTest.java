@@ -20,6 +20,7 @@
 package org.sonar.java.model;
 
 import java.util.List;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -117,97 +118,116 @@ class JavaTreeModelTest {
     assertThat(tree.type()).isInstanceOf(PrimitiveTypeTree.class);
   }
 
-  @Test
-  void literal() {
-    LiteralTree tree = (LiteralTree) expressionOfReturnStatement("class T { int m() { return 1; } }");
-    assertThat(tree)
-      .is(Tree.Kind.INT_LITERAL)
-      .hasChildrenSize(1)
-      .hasValue("1");
-    assertThat(tree.token())
-      .isNotNull()
-      .isAtLine(1)
-      .startsAtColumn(27);
+  @Nested
+  class Literals {
 
-    tree = (LiteralTree) expressionOfReturnStatement("class T { long m() { return 1L; } }");
-    assertThat(tree)
-      .is(Tree.Kind.LONG_LITERAL)
-      .hasChildrenSize(1)
-      .hasValue("1L");
-    assertThat(tree.token())
-      .isNotNull()
-      .isAtLine(1)
-      .startsAtColumn(28);
+    @Test
+    void int_literal() {
+      LiteralTree tree = (LiteralTree) expressionOfReturnStatement("class T { int m() { return 1; } }");
+      assertThat(tree)
+        .is(Tree.Kind.INT_LITERAL)
+        .hasChildrenSize(1)
+        .hasValue("1");
+      assertThat(tree.token())
+        .isAtLine(1)
+        .startsAtColumn(27);
+    }
 
-    tree = (LiteralTree) expressionOfReturnStatement("class T { float m() { return 1F; } }");
-    assertThat(tree)
-      .is(Tree.Kind.FLOAT_LITERAL)
-      .hasValue("1F")
-      .hasChildrenSize(1);
-    assertThat(tree.token())
-      .isNotNull()
-      .isAtLine(1)
-      .startsAtColumn(29);
+    @Test
+    void long_literal() {
+      LiteralTree tree = (LiteralTree) expressionOfReturnStatement("class T { long m() { return 1L; } }");
+      assertThat(tree)
+        .is(Tree.Kind.LONG_LITERAL)
+        .hasChildrenSize(1)
+        .hasValue("1L");
+      assertThat(tree.token())
+        .isAtLine(1)
+        .startsAtColumn(28);
+    }
 
-    tree = (LiteralTree) expressionOfReturnStatement("class T { double m() { return 1d; } }");
-    assertThat(tree)
-      .is(Tree.Kind.DOUBLE_LITERAL)
-      .hasValue("1d")
-      .hasChildrenSize(1);
-    assertThat(tree.token())
-      .isNotNull()
-      .isAtLine(1)
-      .startsAtColumn(30);
+    @Test
+    void float_literal() {
+      LiteralTree tree = (LiteralTree) expressionOfReturnStatement("class T { float m() { return 1F; } }");
+      assertThat(tree)
+        .is(Tree.Kind.FLOAT_LITERAL)
+        .hasValue("1F")
+        .hasChildrenSize(1);
+      assertThat(tree.token())
+        .isAtLine(1)
+        .startsAtColumn(29);
+    }
 
-    tree = (LiteralTree) expressionOfReturnStatement("class T { boolean m() { return true; } }");
-    assertThat(tree)
-      .is(Tree.Kind.BOOLEAN_LITERAL)
-      .hasValue("true")
-      .hasChildrenSize(1);
-    assertThat(tree.token())
-      .isNotNull()
-      .isAtLine(1)
-      .startsAtColumn(31);
+    @Test
+    void double_literal() {
+      LiteralTree tree = (LiteralTree) expressionOfReturnStatement("class T { double m() { return 1d; } }");
+      assertThat(tree)
+        .is(Tree.Kind.DOUBLE_LITERAL)
+        .hasValue("1d")
+        .hasChildrenSize(1);
+      assertThat(tree.token())
+        .isAtLine(1)
+        .startsAtColumn(30);
+    }
 
-    tree = (LiteralTree) expressionOfReturnStatement("class T { boolean m() { return false; } }");
-    assertThat(tree)
-      .is(Tree.Kind.BOOLEAN_LITERAL)
-      .hasValue("false")
-      .hasChildrenSize(1);
-    assertThat(tree.token())
-      .isNotNull()
-      .isAtLine(1)
-      .startsAtColumn(31);
+    @Test
+    void boolean_true_literal() {
+      LiteralTree tree = (LiteralTree) expressionOfReturnStatement("class T { boolean m() { return true; } }");
+      assertThat(tree)
+        .is(Tree.Kind.BOOLEAN_LITERAL)
+        .hasValue("true")
+        .hasChildrenSize(1);
+      assertThat(tree.token())
+        .isAtLine(1)
+        .startsAtColumn(31);
+    }
 
-    tree = (LiteralTree) expressionOfReturnStatement("class T { char m() { return 'c'; } }");
-    assertThat(tree)
-      .is(Tree.Kind.CHAR_LITERAL)
-      .hasValue("'c'")
-      .hasChildrenSize(1);
-    assertThat(tree.token())
-      .isNotNull()
-      .isAtLine(1)
-      .startsAtColumn(28);
+    @Test
+    void boolean_false_literal() {
+      LiteralTree tree = (LiteralTree) expressionOfReturnStatement("class T { boolean m() { return false; } }");
+      assertThat(tree)
+        .is(Tree.Kind.BOOLEAN_LITERAL)
+        .hasValue("false")
+        .hasChildrenSize(1);
+      assertThat(tree.token())
+        .isAtLine(1)
+        .startsAtColumn(31);
+    }
 
-    tree = (LiteralTree) expressionOfReturnStatement("class T { String m() { return \"s\"; } }");
-    assertThat(tree)
-      .is(Tree.Kind.STRING_LITERAL)
-      .hasValue("\"s\"")
-      .hasChildrenSize(1);
-    assertThat(tree.token())
-      .isNotNull()
-      .isAtLine(1)
-      .startsAtColumn(30);
+    @Test
+    void char_literal() {
+      LiteralTree tree = (LiteralTree) expressionOfReturnStatement("class T { char m() { return 'c'; } }");
+      assertThat(tree)
+        .is(Tree.Kind.CHAR_LITERAL)
+        .hasValue("'c'")
+        .hasChildrenSize(1);
+      assertThat(tree.token())
+        .isAtLine(1)
+        .startsAtColumn(28);
+    }
 
-    tree = (LiteralTree) expressionOfReturnStatement("class T { Object m() { return null; } }");
-    assertThat(tree)
-      .is(Tree.Kind.NULL_LITERAL)
-      .hasValue("null")
-      .hasChildrenSize(1);
-    assertThat(tree.token())
-      .isNotNull()
-      .isAtLine(1)
-      .startsAtColumn(30);
+    @Test
+    void string_literal() {
+      LiteralTree tree = (LiteralTree) expressionOfReturnStatement("class T { String m() { return \"s\"; } }");
+      assertThat(tree)
+        .is(Tree.Kind.STRING_LITERAL)
+        .hasValue("\"s\"")
+        .hasChildrenSize(1);
+      assertThat(tree.token())
+        .isAtLine(1)
+        .startsAtColumn(30);
+    }
+
+    @Test
+    void null_literal() {
+      LiteralTree tree = (LiteralTree) expressionOfReturnStatement("class T { Object m() { return null; } }");
+      assertThat(tree)
+        .is(Tree.Kind.NULL_LITERAL)
+        .hasValue("null")
+        .hasChildrenSize(1);
+      assertThat(tree.token())
+        .isAtLine(1)
+        .startsAtColumn(30);
+    }
   }
 
   /**
@@ -222,7 +242,6 @@ class JavaTreeModelTest {
       .is(Tree.Kind.STRING_LITERAL)
       .hasValue("\"\"\"\ntext block\"\"\"");
     assertThat(tree.token())
-      .isNotNull()
       .isAtLine(1)
       .startsAtColumn(30);
   }
@@ -253,47 +272,50 @@ class JavaTreeModelTest {
   @Test
   void compilation_unit() {
     CompilationUnitTree tree = compilationUnit("import foo; import bar; class Foo {} class Bar {}");
-    assertThat(tree).is(Tree.Kind.COMPILATION_UNIT);
+    assertThat(tree)
+      .is(Tree.Kind.COMPILATION_UNIT)
+      .hasChildrenSize(5);
     assertThat(tree.packageDeclaration()).isNull();
     assertThat(tree.imports()).hasSize(2);
     assertThat(tree.types()).hasSize(2);
-    assertThat(tree).hasChildrenSize(5);
 
     tree = compilationUnit("package pkg; import foo; import bar; class Foo {} class Bar {}");
-    assertThat(tree).is(Tree.Kind.COMPILATION_UNIT);
+    assertThat(tree)
+      .is(Tree.Kind.COMPILATION_UNIT)
+      .hasChildrenSize(6);
     assertThat(tree.packageDeclaration()).isNotNull();
     assertThat(tree.imports()).hasSize(2);
     assertThat(tree.types()).hasSize(2);
-    assertThat(tree).hasChildrenSize(6);
 
     tree = compilationUnit("import foo; import bar; ; class Foo {} class Bar {}");
-    assertThat(tree).is(Tree.Kind.COMPILATION_UNIT);
+    assertThat(tree)
+      .is(Tree.Kind.COMPILATION_UNIT)
+      .hasChildrenSize(6);
     assertThat(tree.packageDeclaration()).isNull();
     assertThat(tree.imports()).hasSize(3);
     assertThat(tree.imports().get(2)).is(Tree.Kind.EMPTY_STATEMENT);
     assertThat(tree.types()).hasSize(2);
-    assertThat(tree).hasChildrenSize(6);
   }
 
   @Test
   void package_declaration() {
     PackageDeclarationTree tree = JParserTestUtils.parsePackage("package myPackage;").packageDeclaration();
-    assertThat(tree).is(Tree.Kind.PACKAGE);
+    assertThat(tree)
+      .is(Tree.Kind.PACKAGE)
+      .hasChildrenSize(3);
     assertThat(tree.annotations()).isEmpty();
     assertThat(tree.packageKeyword()).is("package");
-    assertThat(tree.packageName()).isNotNull();
     assertThat(tree.packageName()).is(Tree.Kind.IDENTIFIER);
     assertThat(tree.semicolonToken()).is(";");
-    assertThat(tree).hasChildrenSize(3);
 
     tree = JParserTestUtils.parsePackage("@Foo @Bar package org.myPackage;").packageDeclaration();
-    assertThat(tree).is(Tree.Kind.PACKAGE);
+    assertThat(tree)
+      .is(Tree.Kind.PACKAGE)
+      .hasChildrenSize(5);
     assertThat(tree.annotations()).hasSize(2);
     assertThat(tree.packageKeyword()).is("package");
-    assertThat(tree.packageName()).isNotNull();
     assertThat(tree.packageName()).is(Tree.Kind.MEMBER_SELECT);
     assertThat(tree.semicolonToken()).is(";");
-    assertThat(tree).hasChildrenSize(5);
   }
 
   @Test
@@ -303,108 +325,133 @@ class JavaTreeModelTest {
       .is(Tree.Kind.EMPTY_STATEMENT)
       .isNot(Tree.Kind.IMPORT);
 
-    tree = compilationUnit("import foo.Bar;").imports().get(0);
-    assertThat(tree).is(Tree.Kind.IMPORT);
-    ImportTree importTree = (ImportTree) tree;
+    ImportTree importTree = (ImportTree) compilationUnit("import foo.Bar;").imports().get(0);
+    assertThat(importTree)
+      .is(Tree.Kind.IMPORT)
+      .hasChildrenSize(3);
     assertThat(importTree.isStatic()).isFalse();
     assertThat(importTree.qualifiedIdentifier()).isNotNull();
-    assertThat(importTree).hasChildrenSize(3);
 
-    tree = compilationUnit("import foo.bar.*;").imports().get(0);
-    assertThat(tree).is(Tree.Kind.IMPORT);
-    importTree = (ImportTree) tree;
+    importTree = (ImportTree) compilationUnit("import foo.bar.*;").imports().get(0);
+    assertThat(importTree)
+      .is(Tree.Kind.IMPORT)
+      .hasChildrenSize(3);
     assertThat(importTree.isStatic()).isFalse();
     assertThat(importTree.qualifiedIdentifier()).isNotNull();
-    assertThat(importTree).hasChildrenSize(3);
 
-    tree = compilationUnit("import static foo.Bar.method;").imports().get(0);
-    assertThat(tree).is(Tree.Kind.IMPORT);
-    importTree = (ImportTree) tree;
+    importTree = (ImportTree) compilationUnit("import static foo.Bar.method;").imports().get(0);
+    assertThat(importTree)
+      .is(Tree.Kind.IMPORT)
+      .hasChildrenSize(4);
     assertThat(importTree.isStatic()).isTrue();
     assertThat(importTree.qualifiedIdentifier()).isNotNull();
-    assertThat(importTree).hasChildrenSize(4);
 
-    tree = compilationUnit("import static foo.Bar.*;").imports().get(0);
-    assertThat(tree).is(Tree.Kind.IMPORT);
-    importTree = (ImportTree) tree;
+    importTree = (ImportTree) compilationUnit("import static foo.Bar.*;").imports().get(0);
+    assertThat(importTree)
+      .is(Tree.Kind.IMPORT)
+      .hasChildrenSize(4);
     assertThat(importTree.isStatic()).isTrue();
     assertThat(importTree.qualifiedIdentifier()).isNotNull();
-    assertThat(importTree).hasChildrenSize(4);
   }
 
   /**
    * 4.5.1. Type Arguments and Wildcards
    */
-  @Test
-  void type_arguments() {
-    VariableTree variableTree = (VariableTree) firstMethodFirstStatement("public class T { void m() { ClassType<? extends A, ? super B, ?, C> var; } }");
-    assertThat(variableTree).hasChildrenSize(4);
-    ParameterizedTypeTree parameterizedTypeTree = (ParameterizedTypeTree) variableTree.type();
-    assertThat(parameterizedTypeTree).hasChildrenSize(2);
-    TypeArguments typeArguments = parameterizedTypeTree.typeArguments();
-    assertThat(typeArguments)
-      .hasSize(4)
-      .hasSeparatorsSize(3)
-      .hasChildrenSize(9);
+  @Nested
+  class TypeArgumentsAndWildcards {
 
-    WildcardTree wildcard = (WildcardTree) typeArguments.get(0);
-    assertThat(wildcard)
-      .is(Tree.Kind.EXTENDS_WILDCARD)
-      .hasChildrenSize(3);
-    assertThat(wildcard.bound()).isInstanceOf(IdentifierTree.class);
-    assertThat(wildcard.queryToken()).isNotNull();
-    assertThat(wildcard.queryToken()).is("?");
-    assertThat(wildcard.extendsOrSuperToken()).isNotNull();
-    assertThat(wildcard.extendsOrSuperToken()).is("extends");
+    final VariableTree variableTree = (VariableTree) firstMethodFirstStatement("public class T { void m() { ClassType<? extends A, ? super B, ?, C> var; } }");
+    final ParameterizedTypeTree parameterizedTypeTree = (ParameterizedTypeTree) variableTree.type();
+    final TypeArguments typeArguments = parameterizedTypeTree.typeArguments();
 
-    wildcard = (WildcardTree) typeArguments.get(1);
-    assertThat(wildcard)
-      .is(Tree.Kind.SUPER_WILDCARD)
-      .hasChildrenSize(3);
-    assertThat(wildcard.bound()).isInstanceOf(IdentifierTree.class);
-    assertThat(wildcard.queryToken()).isNotNull();
-    assertThat(wildcard.queryToken()).is("?");
-    assertThat(wildcard.extendsOrSuperToken()).isNotNull();
-    assertThat(wildcard.extendsOrSuperToken()).is("super");
+    @Test
+    void type_arguments() {
+      assertThat(variableTree)
+        .hasChildrenSize(4);
+      assertThat(parameterizedTypeTree)
+        .hasChildrenSize(2);
+      assertThat(typeArguments)
+        .hasSize(4)
+        .hasSeparatorsSize(3)
+        .hasChildrenSize(9);
+      assertThat(typeArguments.get(3))
+        .isInstanceOf(IdentifierTree.class);
+    }
 
-    wildcard = (WildcardTree) typeArguments.get(2);
-    assertThat(wildcard)
-      .is(Tree.Kind.UNBOUNDED_WILDCARD)
-      .hasChildrenSize(1);
-    assertThat(wildcard.bound()).isNull();
-    assertThat(wildcard.queryToken()).is("?");
-    assertThat(wildcard.queryToken()).isNotNull();
-    assertThat(wildcard.extendsOrSuperToken()).isNull();
+    @Test
+    void extends_wildcard() {
+      WildcardTree wildcard = (WildcardTree) typeArguments.get(0);
 
-    assertThat(typeArguments.get(3)).isInstanceOf(IdentifierTree.class);
+      assertThat(wildcard)
+        .is(Tree.Kind.EXTENDS_WILDCARD)
+        .hasChildrenSize(3);
+      assertThat(wildcard.bound()).isInstanceOf(IdentifierTree.class);
+      assertThat(wildcard.queryToken()).is("?");
+      assertThat(wildcard.extendsOrSuperToken()).is("extends");
+    }
 
-    variableTree = (VariableTree) firstMethodFirstStatement("public class T { void m() { ClassType<@Foo ? extends A> var; } }");
-    parameterizedTypeTree = (ParameterizedTypeTree) variableTree.type();
-    assertThat(parameterizedTypeTree).hasChildrenSize(2);
-    typeArguments = parameterizedTypeTree.typeArguments();
-    assertThat(typeArguments).hasChildrenSize(3);
-    wildcard = (WildcardTree) typeArguments.get(0);
-    assertThat(wildcard)
-      .is(Tree.Kind.EXTENDS_WILDCARD)
-      .hasChildrenSize(4);
-    assertThat(wildcard.bound()).isInstanceOf(IdentifierTree.class);
-    assertThat(wildcard.queryToken()).is("?");
-    assertThat(wildcard.annotations()).hasSize(1);
-    assertThat(wildcard.extendsOrSuperToken()).is("extends");
+    @Test
+    void super_wildcard() {
+      WildcardTree wildcard = (WildcardTree) typeArguments.get(1);
 
-    variableTree = (VariableTree) firstMethodFirstStatement("public class T { void m() { ClassType<? extends @Foo @Bar A> var; } }");
-    parameterizedTypeTree = (ParameterizedTypeTree) variableTree.type();
-    assertThat(parameterizedTypeTree).hasChildrenSize(2);
-    typeArguments = parameterizedTypeTree.typeArguments();
-    assertThat(typeArguments).hasChildrenSize(3);
-    wildcard = (WildcardTree) typeArguments.get(0);
-    assertThat(wildcard)
-      .is(Tree.Kind.EXTENDS_WILDCARD)
-      .hasChildrenSize(3);
-    assertThat(wildcard.bound()).isInstanceOf(IdentifierTree.class);
-    assertThat(wildcard.annotations()).isEmpty();
-    assertThat(wildcard.queryToken()).is("?");
-    assertThat(wildcard.extendsOrSuperToken()).is("extends");
+      assertThat(wildcard)
+        .is(Tree.Kind.SUPER_WILDCARD)
+        .hasChildrenSize(3);
+      assertThat(wildcard.bound()).isInstanceOf(IdentifierTree.class);
+      assertThat(wildcard.queryToken()).is("?");
+      assertThat(wildcard.extendsOrSuperToken()).is("super");
+    }
+
+    @Test
+    void unbounded_wildcard() {
+      WildcardTree wildcard = (WildcardTree) typeArguments.get(2);
+
+      assertThat(wildcard)
+        .is(Tree.Kind.UNBOUNDED_WILDCARD)
+        .hasChildrenSize(1);
+      assertThat(wildcard.bound()).isNull();
+      assertThat(wildcard.queryToken()).is("?");
+      assertThat(wildcard.extendsOrSuperToken()).isNull();
+    }
+
+    @Test
+    void annotated_extends_wildcard() {
+      VariableTree variableTree = (VariableTree) firstMethodFirstStatement("public class T { void m() { ClassType<@Foo ? extends A> var; } }");
+      ParameterizedTypeTree parameterizedTypeTree = (ParameterizedTypeTree) variableTree.type();
+      assertThat(parameterizedTypeTree).hasChildrenSize(2);
+
+      TypeArguments typeArguments = parameterizedTypeTree.typeArguments();
+      assertThat(typeArguments).hasChildrenSize(3);
+
+      WildcardTree wildcard = (WildcardTree) typeArguments.get(0);
+      assertThat(wildcard)
+        .is(Tree.Kind.EXTENDS_WILDCARD)
+        .hasChildrenSize(4);
+      assertThat(wildcard.bound()).isInstanceOf(IdentifierTree.class);
+      assertThat(wildcard.queryToken()).is("?");
+      assertThat(wildcard.annotations()).hasSize(1);
+      assertThat(wildcard.extendsOrSuperToken()).is("extends");
+
+    }
+
+    @Test
+    void annotated_extends_wildcard_bound() {
+      VariableTree variableTree = (VariableTree) firstMethodFirstStatement("public class T { void m() { ClassType<? extends @Foo @Bar A> var; } }");
+      ParameterizedTypeTree parameterizedTypeTree = (ParameterizedTypeTree) variableTree.type();
+      assertThat(parameterizedTypeTree).hasChildrenSize(2);
+
+      TypeArguments typeArguments = parameterizedTypeTree.typeArguments();
+      assertThat(typeArguments).hasChildrenSize(3);
+
+      WildcardTree wildcard = (WildcardTree) typeArguments.get(0);
+      assertThat(wildcard)
+        .is(Tree.Kind.EXTENDS_WILDCARD)
+        .hasChildrenSize(3);
+      assertThat(wildcard.bound()).isInstanceOf(IdentifierTree.class);
+      assertThat(wildcard.annotations()).isEmpty();
+      assertThat(wildcard.queryToken()).is("?");
+      assertThat(wildcard.extendsOrSuperToken()).is("extends");
+    }
   }
 
   /*
