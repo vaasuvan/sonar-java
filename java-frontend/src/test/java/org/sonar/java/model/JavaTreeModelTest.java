@@ -457,54 +457,68 @@ class JavaTreeModelTest {
   /*
    * 8. Classes
    */
+  @Nested
+  class Classes {
+    @Test
+    void extended_class() {
+      ClassTree tree = firstType("public class T<U> extends C implements I1, I2 { }");
+      assertThat(tree).is(Tree.Kind.CLASS);
+      List<ModifierKeywordTree> modifiers = tree.modifiers().modifiers();
+      assertThat(modifiers).hasSize(1);
+      assertThat(modifiers.get(0).modifier()).isEqualTo(Modifier.PUBLIC);
+      assertThat(modifiers.get(0).keyword()).is("public");
+      assertThat(tree.simpleName().name()).isEqualTo("T");
+      TypeParameters typeParameters = tree.typeParameters();
+      assertThat(typeParameters)
+        .isNotEmpty()
+        .hasEmptySeparators()
+        .hasChildrenSize(3);
+      assertThat(tree.openBraceToken()).is("{");
+      assertThat(tree.superClass()).isNotNull();
+      assertThat(tree.superInterfaces())
+        .hasSize(2)
+        .hasSeparatorsSize(1);
+      assertThat(tree.superInterfaces().separators().get(0)).is(",");
+      assertThat(tree.closeBraceToken()).is("}");
+      assertThat(tree.declarationKeyword()).is("class");
+    }
 
-  @Test
-  void class_declaration() {
-    ClassTree tree = firstType("public class T<U> extends C implements I1, I2 { }");
-    assertThat(tree).is(Tree.Kind.CLASS);
-    List<ModifierKeywordTree> modifiers = tree.modifiers().modifiers();
-    assertThat(modifiers).hasSize(1);
-    assertThat(modifiers.get(0).modifier()).isEqualTo(Modifier.PUBLIC);
-    assertThat(modifiers.get(0).keyword()).is("public");
-    assertThat(tree.simpleName().name()).isEqualTo("T");
-    TypeParameters typeParameters = tree.typeParameters();
-    assertThat(typeParameters).isNotEmpty();
-    assertThat(typeParameters.separators()).isEmpty();
-    assertThat(typeParameters).hasChildrenSize(3);
-    assertThat(tree.openBraceToken()).is("{");
-    assertThat(tree.superClass()).isNotNull();
-    assertThat(tree.superInterfaces()).hasSize(2);
-    assertThat(tree.superInterfaces()).hasSeparatorsSize(1);
-    assertThat(tree.superInterfaces().separators().get(0)).is(",");
-    assertThat(tree.closeBraceToken()).is("}");
-    assertThat(tree.declarationKeyword()).is("class");
+    @Test
+    void simple_class() {
+      ClassTree tree = firstType("public class T { }");
+      List<ModifierKeywordTree> modifiers = tree.modifiers().modifiers();
+      assertThat(modifiers).hasSize(1);
+      assertThat(modifiers.get(0).modifier()).isEqualTo(Modifier.PUBLIC);
+      assertThat(modifiers.get(0).keyword()).is("public");
+      assertThat(tree.simpleName().name()).isEqualTo("T");
+      assertThat(tree.typeParameters()).isEmpty();
+      assertThat(tree.superClass()).isNull();
+      assertThat(tree.superInterfaces()).isEmpty();
+      assertThat(tree.declarationKeyword()).is("class");
+    }
 
-    tree = firstType("public class T { }");
-    modifiers = tree.modifiers().modifiers();
-    assertThat(modifiers).hasSize(1);
-    assertThat(modifiers.get(0).modifier()).isEqualTo(Modifier.PUBLIC);
-    assertThat(modifiers.get(0).keyword()).is("public");
-    assertThat(tree.simpleName().name()).isEqualTo("T");
-    assertThat(tree.typeParameters()).isEmpty();
-    assertThat(tree.superClass()).isNull();
-    assertThat(tree.superInterfaces()).isEmpty();
-    assertThat(tree.declarationKeyword()).is("class");
+    @Test
+    void parametrized_class() {
+      ClassTree tree = firstType("class T<U,V> { }");
+      assertThat(tree.modifiers()).isEmpty();
+      assertThat(tree.simpleName().name()).isEqualTo("T");
+      TypeParameters typeParameters = tree.typeParameters();
+      assertThat(typeParameters)
+        .hasSize(2)
+        .hasSeparatorsSize(1)
+        .hasChildrenSize(5);
+      assertThat(tree.superClass()).isNull();
+      assertThat(tree.superInterfaces()).isEmpty();
+      assertThat(tree.declarationKeyword()).is("class");
+    }
 
-    tree = firstType("class T<U,V> { }");
-    assertThat(tree.modifiers()).isEmpty();
-    assertThat(tree.simpleName().name()).isEqualTo("T");
-    typeParameters = tree.typeParameters();
-    assertThat(typeParameters).hasSize(2);
-    assertThat(typeParameters).hasSeparatorsSize(1);
-    assertThat(typeParameters).hasChildrenSize(5);
-    assertThat(tree.superClass()).isNull();
-    assertThat(tree.superInterfaces()).isEmpty();
-    assertThat(tree.declarationKeyword()).is("class");
-
-    tree = firstType("@Deprecated class T { }");
-    assertThat(tree).is(Tree.Kind.CLASS);
-    assertThat(tree.modifiers().annotations()).hasSize(1);
-    assertThat(tree.declarationKeyword()).is("class");
+    @Test
+    void annotated_class() {
+      ClassTree tree = firstType("@Deprecated class T { }");
+      assertThat(tree).is(Tree.Kind.CLASS);
+      assertThat(tree.modifiers().annotations()).hasSize(1);
+      assertThat(tree.declarationKeyword()).is("class");
+    }
   }
 
   @Test
@@ -515,10 +529,11 @@ class JavaTreeModelTest {
     AnnotationTree annotation = annotations.get(0);
     assertThat(annotation.annotationType()).is(Tree.Kind.IDENTIFIER);
     assertThat(annotation.arguments().openParenToken()).isNotNull();
-    assertThat(annotation.arguments().separators()).isEmpty();
-    assertThat(annotation.arguments()).hasSize(1);
-    assertThat(annotation.arguments().get(0)).is(Tree.Kind.STRING_LITERAL);
     assertThat(annotation.arguments().closeParenToken()).isNotNull();
+    assertThat(annotation.arguments())
+      .hasEmptySeparators()
+      .hasSize(1);
+    assertThat(annotation.arguments().get(0)).is(Tree.Kind.STRING_LITERAL);
     assertThat(annotation.atToken()).isNotNull();
     assertThat(annotation).hasChildrenSize(3);
 

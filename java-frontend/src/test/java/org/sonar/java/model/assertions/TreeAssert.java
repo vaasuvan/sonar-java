@@ -106,6 +106,11 @@ public class TreeAssert extends AbstractAssert<TreeAssert, Tree> {
       return this;
     }
 
+    public ListTreeAssert hasEmptySeparators() {
+      Assertions.assertThat(actual.separators()).isEmpty();
+      return this;
+    }
+
     public ListTreeAssert hasChildrenSize(int size) {
       TreeAssert.assertThat((Tree) actual).hasChildrenSize(size);
       return this;
