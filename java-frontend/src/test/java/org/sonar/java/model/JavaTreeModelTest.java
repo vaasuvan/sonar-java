@@ -521,6 +521,7 @@ class JavaTreeModelTest {
     }
   }
 
+  // TODO 24/09/2020 separate in multiple tests
   @Test
   void annotations() {
     ClassTree tree = firstType("@SuppressWarnings(\"unchecked\") class T { }");
